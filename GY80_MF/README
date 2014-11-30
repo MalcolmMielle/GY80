@@ -1,0 +1,3 @@
+Scketch pour l'IMU GY-80 n'utilisant pas le magnétomètre.
+
+On récupère les valeurs du gyroscope et de l'accéléromètre puis on applique un filtre compensateur ou un filtre de kalman.

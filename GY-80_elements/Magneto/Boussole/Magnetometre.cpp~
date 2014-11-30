@@ -1,0 +1,66 @@
+#include "Magnetometre.hpp"
+void Magnetometre::readHeadAll(){
+// Tant qu'on ne reçoit pas un "\n" sur le port série,
+	// on concatène le buffer
+	int flag=0;
+	int timer=0;
+	std::string buffer;
+	char next_byte;
+	while(flag!=1)
+	{
+		//Attente du début du mot... on attend donc la fin du denrier mot
+		if(flag==0){
+			_ardu.get(next_byte);
+			if(next_byte=='\n'){
+				flag=2;
+			}
+		}
+		if(flag==2)
+		{	//On lis les valeurs donnés par arduino
+			_ardu.get(next_byte);
+			std::cout<<next_byte<<std::endl;
+			if(next_byte != '\n') buffer = buffer+next_byte;
+			else
+			{
+			    // Quand on a reçu le \n de fin de ligne, on affiche le buffer
+			    // transformé en float (la tension) et on le vide
+			    heading = convertToDouble(buffer);
+			    std::cout<<heading<<std::endl;
+			    buffer.clear();
+			    flag=1;
+			    timer=0;
+			}
+		}
+		//Timer en cas de bug du programme
+		timer++;
+		std::cout << timer << "Avant la fiiiin avec flag = " <<flag <<" et on lit " << next_byte<< std::endl;
+		if(timer>500){
+			printf("Prout de fin\n");
+			printf("Closed\n");
+			_ardu.Close();
+			exit(0);
+
+		}
+	}
+}
+
+void Magnetometre::readHeadOne(){
+	char car='a';
+	_ardu << car ;  // Demande d'information à l'arduino
+	
+	printf("Sending\n");
+	//std::string buffer;
+	//char next_byte;
+	//_ardu.get(next_byte);
+	//std::cout<<next_byte<<std::endl;
+	
+	/*if(next_byte != '\n') buffer = buffer+next_byte;
+	else
+	{
+	    // Quand on a reçu le \n de fin de ligne, on affiche le buffer
+	    // transformé en float (la tension) et on le vide
+	    heading = convertToDouble(buffer);
+	    std::cout<<heading<<std::endl;
+	    buffer.clear();
+	}*/
+}

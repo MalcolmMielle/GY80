@@ -1,0 +1,57 @@
+#ifndef Magne_HPP
+#define Magne_HPP
+
+#include <iostream>
+#include <vector>
+#include <cstdlib>
+#include <sstream>
+#include <string>
+#include <stdexcept>
+//#include <serial.hpp>
+#include <SerialStream.h>
+inline double convertToDouble(std::string const& s);
+
+#define PORT "/dev/ttyUSB0"
+class Magnetometre
+{
+	public : 
+	float heading;//Direction pointée par la magnétomètre
+	LibSerial::SerialStream _ardu;
+	
+	Magnetometre() {
+		//Definition du stream pour lire sur l'arduino
+		_ardu.Open(PORT);
+		_ardu.SetBaudRate(LibSerial::SerialStreamBuf::BAUD_9600);
+		_ardu.SetCharSize(LibSerial::SerialStreamBuf::CHAR_SIZE_8);
+		_ardu.SetParity( LibSerial::SerialStreamBuf::PARITY_NONE ) ;
+		_ardu.SetFlowControl( LibSerial::SerialStreamBuf::FLOW_CONTROL_HARD ) ;
+		_ardu.SetNumOfStopBits( 1 ) ;
+		
+	};
+	~Magnetometre(){
+		printf("Closed\n");
+		_ardu.Close();
+	}
+	//Fonction pour demander TOUTES les mesures
+	void readHeadAll();
+	//Fonction pour demander UNE mesure
+	void readHeadOne();
+	
+};
+
+class BadConversion : public std::runtime_error {
+	public:
+	BadConversion(std::string const& s) 
+	: std::runtime_error(s){}
+};
+ 
+inline double convertToDouble(std::string const& s)
+{
+	std::istringstream i(s);
+	double x;
+	if (!(i >> x))
+	throw BadConversion("convertToDouble(\"" + s + "\")");
+	return x;
+}
+
+#endif
